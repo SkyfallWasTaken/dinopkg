@@ -10,6 +10,7 @@ async fn main() -> Result<()> {
     let env = Env::new()
         .filter("DINOPKG_LOG")
         .write_style("DINOPKG_LOG_STYLE");
+    color_eyre::install()?;
     env_logger::try_init_from_env(env)?;
 
     let cli = Cli::parse();

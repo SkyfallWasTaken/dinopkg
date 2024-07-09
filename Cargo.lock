@@ -238,6 +238,10 @@ dependencies = [
 [[package]]
 name = "dinopkg-package-json"
 version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
 
 [[package]]
 name = "encoding_rs"

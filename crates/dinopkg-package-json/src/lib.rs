@@ -17,8 +17,21 @@ pub struct PackageJson {
 pub type Scripts = HashMap<String, String>;
 pub type Dependencies = HashMap<String, String>;
 
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error("deserialization error: {0}")]
+    Serde(#[from] serde_json::Error),
+}
+
 impl PackageJson {
-    pub fn parse(json: &str) -> Result<Self, serde_json::Error> {
-        serde_json::from_str(json)
+    pub fn parse(json: &str) -> Result<Self, Error> {
+        Ok(serde_json::from_str(json)?)
+    }
+
+    #[cfg(feature = "tokio")]
+    pub async fn from_file() -> Result<Self, Error> {
+        let file = tokio::fs::read("package.json").await?;
+        let file = String::from_utf8(file)?;
+        Self::parse(&file)
     }
 }

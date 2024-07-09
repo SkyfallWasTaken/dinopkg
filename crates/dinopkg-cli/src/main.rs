@@ -1,5 +1,5 @@
 use clap::Parser;
-use env_logger::{Builder, Env};
+use env_logger::Env;
 
 mod command;
 use color_eyre::Result;

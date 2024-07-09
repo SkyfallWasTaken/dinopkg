@@ -6,6 +6,7 @@ use command::{Cli, Command};
 #[tokio::main]
 async fn main() {
     let cli = Cli::parse();
-    cli.command.run().await;
-    println!("Hello, world!");
+    match cli.command {
+        Command::Run { script_name } => command::run::run(script_name).await,
+    }
 }

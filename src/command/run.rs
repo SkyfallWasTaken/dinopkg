@@ -1,8 +1,3 @@
-use super::{Command, Commands};
+use super::Command;
 
-pub struct Run;
-impl Command for Run {
-    async fn run(command: &Commands) {
-        
-    }
-}
+pub async fn run(script_name: Option<String>) {}

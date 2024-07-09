@@ -9,4 +9,6 @@ color-eyre = "0.6.3"
 owo-colors = "4.0.0"
 reqwest = "0.12.5"
 tokio = { version = "1.38.0", features = ["macros", "rt-multi-thread"] }
-dinopkg-package-json = { path = "../dinopkg-package-json" }
+dinopkg-package-json = { path = "../dinopkg-package-json", features = [
+    "tokio",
+] }

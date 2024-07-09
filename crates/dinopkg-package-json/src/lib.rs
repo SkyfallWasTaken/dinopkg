@@ -2,6 +2,8 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
+mod util;
+
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PackageJson {
@@ -21,6 +23,18 @@ pub type Dependencies = HashMap<String, String>;
 pub enum Error {
     #[error("deserialization error: {0}")]
     Serde(#[from] serde_json::Error),
+
+    #[cfg(feature = "tokio")]
+    #[error("package.json not found")]
+    NotFound,
+
+    #[cfg(feature = "tokio")]
+    #[error("I/O error: {0}")]
+    Io(#[from] std::io::Error),
+
+    #[cfg(feature = "tokio")]
+    #[error("file is invalid utf-8")]
+    Utf8(#[from] std::string::FromUtf8Error),
 }
 
 impl PackageJson {
@@ -29,8 +43,12 @@ impl PackageJson {
     }
 
     #[cfg(feature = "tokio")]
-    pub async fn from_file() -> Result<Self, Error> {
-        let file = tokio::fs::read("package.json").await?;
+    pub async fn from_file(max_attempts: usize) -> Result<Self, Error> {
+        let path = util::find_package_json(max_attempts).await?;
+        let Some(path) = path else {
+            return Err(Error::NotFound);
+        };
+        let file = tokio::fs::read(path).await?;
         let file = String::from_utf8(file)?;
         Self::parse(&file)
     }

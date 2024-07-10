@@ -1,8 +1,9 @@
 use clap::Parser;
+use color_eyre::Result;
 use env_logger::Env;
 
 mod command;
-use color_eyre::Result;
+mod run_script;
 use command::{Cli, Command};
 
 #[tokio::main]

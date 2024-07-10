@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
@@ -43,13 +44,13 @@ impl PackageJson {
     }
 
     #[cfg(feature = "tokio")]
-    pub async fn from_file(max_attempts: usize) -> Result<Self, Error> {
+    pub async fn from_file(max_attempts: usize) -> Result<(Self, PathBuf), Error> {
         let path = util::find_package_json(max_attempts).await?;
         let Some(path) = path else {
             return Err(Error::NotFound);
         };
-        let file = tokio::fs::read(path).await?;
+        let file = tokio::fs::read(path.clone()).await?;
         let file = String::from_utf8(file)?;
-        Self::parse(&file)
+        Ok((Self::parse(&file)?, path))
     }
 }

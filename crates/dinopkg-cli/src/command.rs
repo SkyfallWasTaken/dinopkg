@@ -17,4 +17,8 @@ pub enum Command {
         /// The name of the script to run
         script_name: Option<String>,
     },
+
+    /// Run tests for a package
+    #[command(aliases = ["tst", "t"])]
+    Test,
 }

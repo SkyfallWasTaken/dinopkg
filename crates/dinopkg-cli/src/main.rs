@@ -17,6 +17,7 @@ async fn main() -> Result<()> {
     let cli = Cli::parse();
     match cli.command {
         Command::Run { script_name } => command::run::run(script_name).await?,
+        Command::Test => command::run::run(Some("test".into())).await?,
     }
     Ok(())
 }

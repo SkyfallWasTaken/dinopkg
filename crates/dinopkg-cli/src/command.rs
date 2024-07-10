@@ -12,6 +12,7 @@ pub struct Cli {
 #[derive(Subcommand)]
 pub enum Command {
     /// Run a script in package.json
+    #[command(aliases = ["rum", "urn", "run-script"])]
     Run {
         /// The name of the script to run
         script_name: Option<String>,

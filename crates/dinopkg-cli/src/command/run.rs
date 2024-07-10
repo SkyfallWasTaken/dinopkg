@@ -8,14 +8,14 @@ pub async fn run(script_name: Option<String>) -> Result<()> {
     let (package_json, package_json_path) = PackageJson::from_file(10).await?;
     let root_path = package_json_path.parent().unwrap(); // Should never happen, `package.json` should always be there
 
+    let Some(scripts) = package_json.scripts else {
+        return Err(eyre!("no `scripts` provided in package.json"));
+    };
     match script_name {
         Some(script_name) => {
-            let Some(scripts) = package_json.scripts else {
-                return Err(eyre!("no `scripts` provided in package.json"));
-            };
             match scripts.get(&script_name) {
                 Some(script) => {
-                    println!("> {}", script.bold());
+                    println!("{} {}", "$".purple().dimmed(), script.bold().dimmed());
 
                     let status =
                         run_script(DEFAULT_SHELL, DEFAULT_SHELL_EXEC_ARG, &script, root_path)
@@ -40,7 +40,10 @@ pub async fn run(script_name: Option<String>) -> Result<()> {
             }
         }
         _ => {
-            todo!()
+            println!("{}", "Available scripts:".bold().underline());
+            for (key, val) in scripts.iter() {
+                println!("{} - {}", key.bold(), val.dimmed())
+            }
         }
     }
 

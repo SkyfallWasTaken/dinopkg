@@ -27,7 +27,7 @@ jobs:
         run: cargo build
 
       - name: Run cargo nextest
-        run: cargo nextest run
+        run: cargo nextest run --all-features
 
       - name: Run cargo machete
         run: cargo machete

@@ -19,3 +19,6 @@ dinopkg-package-json = { path = "../dinopkg-package-json", features = [
 exitcode = "1.1.2"
 log = "0.4.22"
 env_logger = "0.11.3"
+dialoguer = "0.11.0"
+camino = "1.1.7"
+gix-config = "0.37.0"

@@ -1,5 +1,6 @@
 use clap::{Parser, Subcommand};
 
+pub mod init;
 pub mod run;
 
 #[derive(Parser)]
@@ -21,4 +22,7 @@ pub enum Command {
     /// Run tests for a package
     #[command(aliases = ["tst", "t"])]
     Test,
+
+    /// Create a package.json file
+    Init,
 }

@@ -11,9 +11,7 @@ pub async fn init() -> Result<()> {
     let current_dir_name = current_dir.file_name().unwrap_or("package");
     // FIXME: this blocks the event loop
     let git_config_file = GitConfigFile::from_git_dir(current_dir.join(".git").into());
-    let git_repo_url = git_config_file
-        .and_then(|config| {
-            Ok(config
+    let git_repo_url = git_config_file.map(|config| config
                 .section("remote", Some("origin".into()))
                 .ok()
                 .and_then(|remote_section| {
@@ -22,7 +20,6 @@ pub async fn init() -> Result<()> {
                         .value("url")
                         .map(|url| url.to_string())
                 }))
-        })
         .ok()
         .flatten()
         .map(|url| url.replace("git@github.com", "https://github.com/"));

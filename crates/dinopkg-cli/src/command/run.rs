@@ -18,7 +18,7 @@ pub async fn run(script_name: Option<String>) -> Result<()> {
                     println!("{} {}", "$".purple().dimmed(), script.bold().dimmed());
 
                     let status =
-                        run_script(DEFAULT_SHELL, DEFAULT_SHELL_EXEC_ARG, &script, root_path)
+                        run_script(DEFAULT_SHELL, DEFAULT_SHELL_EXEC_ARG, script, root_path)
                             .await?;
 
                     if cfg!(unix) {

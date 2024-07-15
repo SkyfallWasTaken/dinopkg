@@ -3,7 +3,11 @@ use std::env;
 use camino::Utf8PathBuf;
 use color_eyre::Result;
 use dialoguer::{theme::ColorfulTheme, Confirm, Input};
+use dinopkg_package_json::PackageJson;
 use gix_config::File as GitConfigFile;
+use maplit::hashmap;
+use owo_colors::OwoColorize;
+use tokio::fs;
 
 pub async fn init() -> Result<()> {
     // Get some project/env specific info to make the defaults more relevant
@@ -11,7 +15,9 @@ pub async fn init() -> Result<()> {
     let current_dir_name = current_dir.file_name().unwrap_or("package");
     // FIXME: this blocks the event loop
     let git_config_file = GitConfigFile::from_git_dir(current_dir.join(".git").into());
-    let git_repo_url = git_config_file.map(|config| config
+    let git_repo_url = git_config_file
+        .map(|config| {
+            config
                 .section("remote", Some("origin".into()))
                 .ok()
                 .and_then(|remote_section| {
@@ -19,7 +25,8 @@ pub async fn init() -> Result<()> {
                         .body()
                         .value("url")
                         .map(|url| url.to_string())
-                }))
+                })
+        })
         .ok()
         .flatten()
         .map(|url| url.replace("git@github.com", "https://github.com/"));
@@ -30,9 +37,13 @@ pub async fn init() -> Result<()> {
         .default(current_dir_name.into())
         .interact_text()?;
     let version: String = Input::with_theme(&ColorfulTheme::default())
-        .with_prompt("Version")
+        .with_prompt("Package version")
         .default("1.0.0".into())
         .interact_text()?;
+    let private = Confirm::with_theme(&ColorfulTheme::default())
+        .with_prompt("Is this a private package?")
+        .default(true)
+        .interact()?;
     let description: String = Input::with_theme(&ColorfulTheme::default())
         .with_prompt("Description")
         .allow_empty(true)
@@ -58,15 +69,28 @@ pub async fn init() -> Result<()> {
         .default("MIT".into())
         .interact_text()?;
 
-    dbg!(
-        package_name,
+    let package_json = PackageJson {
+        name: package_name,
         version,
-        description,
-        entry_point,
-        test_command,
-        git_repository,
-        author,
-        license
+        author: Some(author),
+        repository: Some(git_repository),
+        license: Some(license),
+        description: Some(description),
+        private,
+        main: Some(entry_point),
+
+        scripts: Some(hashmap! {
+            "test".into() => test_command,
+        }),
+
+        dependencies: None,
+        dev_dependencies: None,
+    };
+    let output = serde_json::to_string_pretty(&package_json)?;
+
+    println!(
+        "\nI will write the following output to {}:\n{output}\n",
+        "`package.json`".purple()
     );
 
     let yes = Confirm::with_theme(&ColorfulTheme::default())
@@ -74,9 +98,14 @@ pub async fn init() -> Result<()> {
         .default(true)
         .interact()?;
     if yes {
-        println!("Writing.")
+        fs::write("package.json", output).await?;
+        println!(
+            "Successfully wrote new {} for {}!",
+            "`package.json`".purple(),
+            package_json.name.purple()
+        );
     } else {
-        println!("Cancelled.")
+        println!("{}", "Cancelled.".bold().red())
     }
 
     Ok(())

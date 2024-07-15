@@ -24,5 +24,6 @@ pub enum Command {
     Test,
 
     /// Create a package.json file
+    #[command(aliases = ["create", "innit"])]
     Init,
 }

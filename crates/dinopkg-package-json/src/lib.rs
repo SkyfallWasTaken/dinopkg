@@ -2,19 +2,39 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
+use serde_with::{serde_as, skip_serializing_none};
 
 mod util;
 
+#[serde_as]
+#[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PackageJson {
     pub name: String,
     pub version: String,
+    pub author: Option<String>,
+    #[serde(default = "default_as_false")]
+    #[serde(skip_serializing_if = "is_false")]
+    pub private: bool,
+    pub license: Option<String>,
     pub description: Option<String>,
     pub main: Option<String>,
+    pub repository: Option<String>,
+
     pub scripts: Option<Scripts>,
+
     pub dependencies: Option<Dependencies>,
     pub dev_dependencies: Option<Dependencies>,
+}
+
+// serde :/
+fn is_false(value: &bool) -> bool {
+    !*value
+}
+
+fn default_as_false() -> bool {
+    false
 }
 
 pub type Scripts = HashMap<String, String>;

@@ -2,7 +2,7 @@ use std::env;
 
 use camino::Utf8PathBuf;
 use color_eyre::Result;
-use dialoguer::{theme::ColorfulTheme, Input};
+use dialoguer::{theme::ColorfulTheme, Confirm, Input};
 use gix_config::File as GitConfigFile;
 
 pub async fn init() -> Result<()> {
@@ -71,6 +71,16 @@ pub async fn init() -> Result<()> {
         author,
         license
     );
+
+    let yes = Confirm::with_theme(&ColorfulTheme::default())
+        .with_prompt("Is this okay?")
+        .default(true)
+        .interact()?;
+    if yes {
+        println!("Writing.")
+    } else {
+        println!("Cancelled.")
+    }
 
     Ok(())
 }

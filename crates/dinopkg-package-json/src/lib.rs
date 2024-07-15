@@ -29,8 +29,9 @@ pub struct PackageJson {
 }
 
 // serde :/
+#[allow(clippy::trivially_copy_pass_by_ref)]
 fn is_false(value: &bool) -> bool {
-    !*value
+    !value
 }
 
 fn default_as_false() -> bool {

@@ -41,8 +41,8 @@ pub async fn run(script_name: Option<String>) -> Result<()> {
         }
         _ => {
             println!("{}", "Available scripts:".bold().underline());
-            for (key, val) in scripts.iter() {
-                println!("{} - {}", key.bold(), val.dimmed())
+            for (key, val) in &scripts {
+                println!("{} - {}", key.bold(), val.dimmed());
             }
         }
     }

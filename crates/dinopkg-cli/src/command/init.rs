@@ -108,7 +108,7 @@ pub async fn init() -> Result<()> {
     for line in LinesWithEndings::from(&output) {
         let ranges: Vec<(Style, &str)> = h.highlight_line(line, &ps).unwrap();
         let escaped = as_24_bit_terminal_escaped(&ranges[..], false);
-        print!("{}", escaped);
+        print!("{escaped}");
     }
     println!("\x1b[0m");
 
@@ -124,7 +124,7 @@ pub async fn init() -> Result<()> {
             package_json.name.purple()
         );
     } else {
-        println!("{}", "Cancelled.".bold().red())
+        println!("{}", "Cancelled.".bold().red());
     }
 
     Ok(())

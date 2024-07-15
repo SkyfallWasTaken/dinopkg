@@ -3,16 +3,13 @@ use std::env;
 use camino::Utf8PathBuf;
 use color_eyre::Result;
 use dialoguer::{theme::ColorfulTheme, Input};
-use gix_config::{
-    file::{init::Options, Metadata},
-    File as GitConfigFile,
-};
-use tokio::fs;
+use gix_config::File as GitConfigFile;
 
 pub async fn init() -> Result<()> {
     // Get some project/env specific info to make the defaults more relevant
     let current_dir = Utf8PathBuf::try_from(env::current_dir()?)?;
     let current_dir_name = current_dir.file_name().unwrap_or("package");
+    // FIXME: this blocks the event loop
     let git_config_file = GitConfigFile::from_git_dir(current_dir.join(".git").into());
     let git_repo_url = git_config_file
         .and_then(|config| {
@@ -27,7 +24,8 @@ pub async fn init() -> Result<()> {
                 }))
         })
         .ok()
-        .flatten();
+        .flatten()
+        .map(|url| url.replace("git@github.com", "https://github.com/"));
 
     // Now, onto the questions!
     let package_name: String = Input::with_theme(&ColorfulTheme::default())

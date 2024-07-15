@@ -1,7 +1,9 @@
 [package]
 name = "validate_package_name"
+description = "validate npm package names"
 version = "0.2.0"
 edition = "2021"
+license = "MIT"
 
 [dependencies]
 lazy_static = "1.5.0"

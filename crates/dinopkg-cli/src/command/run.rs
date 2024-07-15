@@ -11,39 +11,35 @@ pub async fn run(script_name: Option<String>) -> Result<()> {
     let Some(scripts) = package_json.scripts else {
         return Err(eyre!("no `scripts` provided in package.json"));
     };
-    match script_name {
-        Some(script_name) => {
-            match scripts.get(&script_name) {
-                Some(script) => {
-                    println!("{} {}", "$".purple().dimmed(), script.bold().dimmed());
+    if let Some(script_name) = script_name {
+        match scripts.get(&script_name) {
+            Some(script) => {
+                println!("{} {}", "$".purple().dimmed(), script.bold().dimmed());
 
-                    let status =
-                        run_script(DEFAULT_SHELL, DEFAULT_SHELL_EXEC_ARG, script, root_path)
-                            .await?;
+                let status =
+                    run_script(DEFAULT_SHELL, DEFAULT_SHELL_EXEC_ARG, script, root_path).await?;
 
-                    if cfg!(unix) {
-                        use std::os::unix::process::ExitStatusExt;
+                if cfg!(unix) {
+                    use std::os::unix::process::ExitStatusExt;
 
-                        if let Some(signal) = status.signal() {
-                            return Err(eyre!(format!("process terminated by signal {signal}")));
-                        }
-                    }
-
-                    // The only time the exit code isn't there is if the process was terminated by a signal.
-                    // We check for that above (and on non-Unix systems, there will always be an exit code.)
-                    let exit_code = status.code().unwrap();
-                    if exit_code != exitcode::OK {
-                        return Err(eyre!(format!("process exited with code {exit_code}")));
+                    if let Some(signal) = status.signal() {
+                        return Err(eyre!(format!("process terminated by signal {signal}")));
                     }
                 }
-                _ => return Err(eyre!(format!("script `{script_name}` not found"))),
+
+                // The only time the exit code isn't there is if the process was terminated by a signal.
+                // We check for that above (and on non-Unix systems, there will always be an exit code.)
+                let exit_code = status.code().unwrap();
+                if exit_code != exitcode::OK {
+                    return Err(eyre!(format!("process exited with code {exit_code}")));
+                }
             }
+            _ => return Err(eyre!(format!("script `{script_name}` not found"))),
         }
-        _ => {
-            println!("{}", "Available scripts:".bold().underline());
-            for (key, val) in &scripts {
-                println!("{} - {}", key.bold(), val.dimmed());
-            }
+    } else {
+        println!("{}", "Available scripts:".bold().underline());
+        for (key, val) in &scripts {
+            println!("{} - {}", key.bold(), val.dimmed());
         }
     }
 

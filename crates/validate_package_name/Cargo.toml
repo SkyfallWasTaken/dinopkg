@@ -1,0 +1,10 @@
+[package]
+name = "validate_package_name"
+version = "0.2.0"
+edition = "2021"
+
+[dependencies]
+lazy_static = "1.5.0"
+regex = "1.10.5"
+thiserror = "1.0.62"
+urlencoding = "2.1.3"

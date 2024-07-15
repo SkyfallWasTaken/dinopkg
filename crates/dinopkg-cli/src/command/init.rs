@@ -1,15 +1,28 @@
 use std::env;
 
 use camino::Utf8PathBuf;
+use color_eyre::eyre::eyre;
 use color_eyre::Result;
 use dialoguer::{theme::ColorfulTheme, Confirm, Input};
 use dinopkg_package_json::PackageJson;
 use gix_config::File as GitConfigFile;
 use maplit::hashmap;
 use owo_colors::OwoColorize;
+use syntect::easy::HighlightLines;
+use syntect::highlighting::{Style, ThemeSet};
+use syntect::parsing::SyntaxSet;
+use syntect::util::{as_24_bit_terminal_escaped, LinesWithEndings};
 use tokio::fs;
 
 pub async fn init() -> Result<()> {
+    // FIXME: one instance should be loaded at start
+    let ps = SyntaxSet::load_defaults_newlines();
+    let ts = ThemeSet::load_defaults();
+    let syntax = ps
+        .find_syntax_by_extension("json")
+        .ok_or(eyre!("failed to load json syntax"))?;
+    let mut h = HighlightLines::new(syntax, &ts.themes["base16-eighties.dark"]);
+
     // Get some project/env specific info to make the defaults more relevant
     let current_dir = Utf8PathBuf::try_from(env::current_dir()?)?;
     let current_dir_name = current_dir.file_name().unwrap_or("package");
@@ -86,12 +99,18 @@ pub async fn init() -> Result<()> {
         dependencies: None,
         dev_dependencies: None,
     };
-    let output = serde_json::to_string_pretty(&package_json)?;
 
     println!(
-        "\nI will write the following output to {}:\n{output}\n",
+        "\nI will write the following output to {}:",
         "`package.json`".purple()
     );
+    let output = serde_json::to_string_pretty(&package_json)?;
+    for line in LinesWithEndings::from(&output) {
+        let ranges: Vec<(Style, &str)> = h.highlight_line(line, &ps).unwrap();
+        let escaped = as_24_bit_terminal_escaped(&ranges[..], false);
+        print!("{}", escaped);
+    }
+    println!("\x1b[0m");
 
     let yes = Confirm::with_theme(&ColorfulTheme::default())
         .with_prompt("Is this okay?")

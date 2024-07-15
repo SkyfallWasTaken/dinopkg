@@ -1,0 +1,36 @@
+name: Check Vortex backend
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Use Rust cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install tools
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-nextest,cargo-machete
+
+      - name: Run cargo build
+        run: cargo build
+
+      - name: Run cargo nextest
+        run: cargo nextest run
+
+      - name: Run cargo machete
+        run: cargo machete
+
+      - name: Check formatting
+        run: cargo fmt --check

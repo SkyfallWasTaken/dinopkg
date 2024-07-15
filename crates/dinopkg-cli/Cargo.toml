@@ -7,7 +7,6 @@ edition = "2021"
 clap = { version = "4.5.9", features = ["derive"] }
 color-eyre = "0.6.3"
 owo-colors = "4.0.0"
-reqwest = "0.12.5"
 tokio = { version = "1.38.0", features = [
     "macros",
     "rt-multi-thread",
@@ -17,7 +16,6 @@ dinopkg-package-json = { path = "../dinopkg-package-json", features = [
     "tokio",
 ] }
 exitcode = "1.1.2"
-log = "0.4.22"
 env_logger = "0.11.3"
 dialoguer = "0.11.0"
 camino = "1.1.7"

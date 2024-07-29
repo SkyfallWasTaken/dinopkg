@@ -47,6 +47,11 @@ pub async fn init() -> Result<()> {
     // Now, onto the questions!
     let package_name: String = Input::with_theme(&ColorfulTheme::default())
         .with_prompt("Package name")
+        .validate_with(
+            |input: &String| -> Result<(), validate_package_name::Error> {
+                validate_package_name::validate(input)
+            },
+        )
         .default(current_dir_name.into())
         .interact_text()?;
     let version: String = Input::with_theme(&ColorfulTheme::default())

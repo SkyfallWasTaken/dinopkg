@@ -1,0 +1,10 @@
+[package]
+name = "dinopkg-npm-registry"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+reqwest = { version = "0.12.5", features = ["json"] }
+serde = { version = "1.0.204", features = ["derive"] }
+thiserror = "1.0.63"
+dinopkg-package-json = { path = "../dinopkg-package-json" }

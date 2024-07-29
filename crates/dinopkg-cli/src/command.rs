@@ -1,6 +1,7 @@
 use clap::{Parser, Subcommand};
 
 pub mod init;
+pub mod install;
 pub mod run;
 
 #[derive(Parser)]
@@ -26,4 +27,11 @@ pub enum Command {
     /// Create a package.json file
     #[command(aliases = ["create", "innit"])]
     Init,
+
+    /// Installs dependencies for `package.json`
+    #[command(aliases = ["i", "add"])]
+    Install {
+        /// The name of the package to install
+        name: String,
+    },
 }

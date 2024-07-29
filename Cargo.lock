@@ -375,12 +375,14 @@ dependencies = [
  "clap",
  "color-eyre",
  "dialoguer",
+ "dinopkg-npm-registry",
  "dinopkg-package-json",
  "env_logger",
  "exitcode",
  "gix-config",
  "maplit",
  "owo-colors 4.0.0",
+ "reqwest",
  "serde_json",
  "spdx",
  "syntect",
@@ -400,7 +402,7 @@ dependencies = [
 
 [[package]]
 name = "dinopkg-package-json"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "serde",
  "serde_json",

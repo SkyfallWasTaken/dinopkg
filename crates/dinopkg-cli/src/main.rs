@@ -19,6 +19,7 @@ async fn main() -> Result<()> {
         Command::Run { script_name } => command::run::run(script_name).await?,
         Command::Test => command::run::run(Some("test".into())).await?,
         Command::Init => command::init::init().await?,
+        Command::Install { name } => command::install::install_cmd(name).await?,
     }
     Ok(())
 }

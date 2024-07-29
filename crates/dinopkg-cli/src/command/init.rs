@@ -4,7 +4,7 @@ use camino::Utf8PathBuf;
 use color_eyre::eyre::eyre;
 use color_eyre::Result;
 use dialoguer::{theme::ColorfulTheme, Confirm, Input};
-use dinopkg_package_json::PackageJson;
+use dinopkg_package_json::{PackageJson, AuthorObjOrString};
 use gix_config::File as GitConfigFile;
 use maplit::hashmap;
 use owo_colors::OwoColorize;
@@ -96,7 +96,7 @@ pub async fn init() -> Result<()> {
     let package_json = PackageJson {
         name: package_name,
         version,
-        author: Some(author),
+        author: Some(AuthorObjOrString::String(author)),
         repository: Some(git_repository),
         license: Some(license),
         description: Some(description),

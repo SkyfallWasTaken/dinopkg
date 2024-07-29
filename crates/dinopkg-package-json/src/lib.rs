@@ -8,12 +8,12 @@ mod util;
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct PackageJson {
     pub name: String,
     pub version: String,
-    pub author: Option<String>,
+    pub author: Option<AuthorObjOrString>,
     #[serde(default = "default_as_false")]
     #[serde(skip_serializing_if = "is_false")]
     pub private: bool,
@@ -26,6 +26,13 @@ pub struct PackageJson {
 
     pub dependencies: Option<Dependencies>,
     pub dev_dependencies: Option<Dependencies>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(untagged)]
+pub enum AuthorObjOrString {
+    Author { name: String, url: Option<String> },
+    String(String),
 }
 
 // serde :/

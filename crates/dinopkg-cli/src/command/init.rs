@@ -85,10 +85,8 @@ pub async fn init() -> Result<()> {
     let license: String = Input::with_theme(&ColorfulTheme::default())
         .with_prompt("License")
         .validate_with(|input: &String| {
-            spdx::Expression::parse(input).map_or_else(
-                |err| Err(format!("license is invalid:\n{}", err.to_string())),
-                |_| Ok(()),
-            )
+            spdx::Expression::parse(input)
+                .map_or_else(|err| Err(format!("license is invalid:\n{err}")), |_| Ok(()))
         })
         .default("MIT".into())
         .interact_text()?;

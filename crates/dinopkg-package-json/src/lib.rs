@@ -43,7 +43,7 @@ fn is_false(value: &bool) -> bool {
 }
 
 #[inline(always)]
-fn default_as_false() -> bool {
+const fn default_as_false() -> bool {
     false
 }
 

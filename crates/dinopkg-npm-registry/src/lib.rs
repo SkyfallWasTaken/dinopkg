@@ -23,13 +23,10 @@ pub enum Error {
 }
 
 impl PackageInfo {
-    pub async fn from_name(
-        package_name: &str,
-        client: &reqwest::Client,
-    ) -> Result<PackageInfo, Error> {
+    pub async fn from_name(package_name: &str, client: &reqwest::Client) -> Result<Self, Error> {
         let url = format!("{NPM_REGISTRY_ROOT_URL}/{package_name}");
         let response = client.get(&url).send().await?;
-        let package_info = response.json::<PackageInfo>().await?;
+        let package_info = response.json::<Self>().await?;
         Ok(package_info)
     }
 }

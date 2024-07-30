@@ -74,10 +74,16 @@ pub async fn init() -> Result<()> {
         .with_prompt("Test command")
         .default("echo \"Error: no test specified\" && exit 1".into())
         .interact_text()?;
-    let git_repository: String = Input::with_theme(&ColorfulTheme::default())
+    let mut git_repository: String = Input::with_theme(&ColorfulTheme::default())
         .with_prompt("Git repository")
         .default(git_repo_url.unwrap_or_default())
         .interact_text()?;
+    if !git_repository.is_empty() {
+        // TODO: this doesn't handle SVN etc.
+        if !git_repository.ends_with(".git") {
+            git_repository.push_str(".git");
+        }
+    }
     let author: String = Input::with_theme(&ColorfulTheme::default())
         .with_prompt("Author name")
         .allow_empty(true)

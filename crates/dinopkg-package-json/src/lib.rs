@@ -13,7 +13,7 @@ mod util;
 pub struct PackageJson {
     pub name: String,
     pub version: String,
-    pub author: Option<AuthorObjOrString>,
+    pub author: Option<AuthorVariant>,
     #[serde(default = "default_as_false")]
     #[serde(skip_serializing_if = "is_false")]
     pub private: bool,
@@ -30,7 +30,7 @@ pub struct PackageJson {
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(untagged)]
-pub enum AuthorObjOrString {
+pub enum AuthorVariant {
     Author { name: String, url: Option<String> },
     String(String),
 }

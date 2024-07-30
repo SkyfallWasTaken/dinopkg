@@ -20,7 +20,7 @@ pub struct PackageJson {
     pub license: Option<String>,
     pub description: Option<String>,
     pub main: Option<String>,
-    pub repository: Option<String>,
+    pub repository: Option<RepositoryVariant>,
 
     pub scripts: Option<Scripts>,
 
@@ -32,6 +32,13 @@ pub struct PackageJson {
 #[serde(untagged)]
 pub enum AuthorVariant {
     Author { name: String, url: Option<String> },
+    String(String),
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(untagged)]
+pub enum RepositoryVariant {
+    Repository { r#type: String, url: Option<String> },
     String(String),
 }
 

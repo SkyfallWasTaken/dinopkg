@@ -8,7 +8,7 @@ mod util;
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct PackageJson {
     pub name: String,
@@ -28,14 +28,14 @@ pub struct PackageJson {
     pub dev_dependencies: Option<Dependencies>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
 #[serde(untagged)]
 pub enum AuthorVariant {
     Author { name: String, url: Option<String> },
     String(String),
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
 #[serde(untagged)]
 pub enum RepositoryVariant {
     Repository { r#type: String, url: Option<String> },
@@ -89,5 +89,87 @@ impl PackageJson {
         let file = tokio::fs::read(path.clone()).await?;
         let file = String::from_utf8(file)?;
         Ok((Self::parse(&file)?, path))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use maplit::hashmap;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_parse() {
+        let json = r#"{
+            "name": "dinopkg-package-json",
+            "version": "0.1.0",
+            "author": "Skyfall",
+            "dependencies": {
+                "express": "^4.17.1"
+            }
+        }"#;
+        let package_json = PackageJson::parse(json).unwrap();
+        assert_eq!(
+            package_json,
+            PackageJson {
+                name: "dinopkg-package-json".into(),
+                version: "0.1.0".into(),
+                author: Some(AuthorVariant::String("Skyfall".into())),
+                dependencies: Some(hashmap! {
+                    "express".into() => "^4.17.1".into(),
+                }),
+                ..Default::default()
+            }
+        )
+    }
+
+    #[test]
+    fn author_variants() {
+        let json = r#"{
+                "name": "dinopkg-package-json",
+                "version": "0.1.0",
+                "author": {
+                    "name": "Skyfall",
+                    "url": "https://skyfall.dev"
+                }
+            }"#;
+        let package_json = PackageJson::parse(json).unwrap();
+        assert_eq!(
+            package_json,
+            PackageJson {
+                name: "dinopkg-package-json".into(),
+                version: "0.1.0".into(),
+                author: Some(AuthorVariant::Author {
+                    name: "Skyfall".into(),
+                    url: Some("https://skyfall.dev".into())
+                }),
+                ..Default::default()
+            }
+        )
+    }
+
+    #[test]
+    fn repository_variants() {
+        let json = r#"{
+                "name": "dinopkg-package-json",
+                "version": "0.1.0",
+                "repository": {
+                    "type": "git",
+                    "url": "git+https://github.com/SkyfallWasTaken/choco.git"
+                }
+            }"#;
+        let package_json = PackageJson::parse(json).unwrap();
+        assert_eq!(
+            package_json,
+            PackageJson {
+                name: "dinopkg-package-json".into(),
+                version: "0.1.0".into(),
+                repository: Some(RepositoryVariant::Repository {
+                    r#type: "git".into(),
+                    url: Some("git+https://github.com/SkyfallWasTaken/choco.git".into())
+                }),
+                ..Default::default()
+            }
+        )
     }
 }

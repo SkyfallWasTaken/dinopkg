@@ -27,3 +27,7 @@ syntect = "5.2.0"
 validate_package_name = { path = "../validate_package_name" }
 spdx = "0.10.6"
 reqwest = "0.12.5"
+
+[[bin]]
+name = "dino"
+path = "src/main.rs"

@@ -44,12 +44,14 @@ pub enum RepositoryVariant {
 
 // serde :/
 #[allow(clippy::trivially_copy_pass_by_ref)]
+#[cfg(not(tarpaullin_include))]
 #[inline(always)]
 fn is_false(value: &bool) -> bool {
     !value
 }
 
 #[inline(always)]
+#[cfg(not(tarpaullin_include))]
 const fn default_as_false() -> bool {
     false
 }

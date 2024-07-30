@@ -8,12 +8,15 @@ const NPM_REGISTRY_ROOT_URL: &str = "https://registry.npmjs.org";
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PackageInfo {
     /// The name of the package, for example `discord.js`.
-    name: String,
+    pub name: String,
 
     /// A map of versions to their respective version info.
     ///
     /// The key is the version string (e.g. `0.1.0`), and the value is the version's `package.json` info.
-    versions: HashMap<String, PackageJson>,
+    pub versions: HashMap<String, PackageJson>,
+
+    #[serde(rename = "dist-tags")]
+    pub dist_keys: HashMap<String, String>,
 }
 
 #[derive(thiserror::Error, Debug)]
